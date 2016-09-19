@@ -99,7 +99,7 @@ public function actionUpload()
 
 ## Widget's properties
 
-string `$mainModelName` - the name of the model for export/import
+string `$mainModelName` - the name of the model for export/import. It's mandatory property.
 
 string `$fileNameFrom` - path to a file for export/import. Default is `'uploads' . DIRECTORY_SEPARATOR . 'export.xlsx'`.
 
