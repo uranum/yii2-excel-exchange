@@ -44,11 +44,10 @@ In view (for example, index.php)
 use uranum\src\ExcelExchanger;
 use uranum\src\Asset;
 
-...
+//...
 
 echo ExcelExchanger::widget([
 	'mainModelName' => $searchModel::className(), // here place model class name
-	'fileNameFrom' => 'uploads/export.xlsx', // It's default. Path to the file for importing.
  ]);
 ```
 
@@ -57,7 +56,7 @@ In controller
 use uranum\src\ExcelExchanger;
 use uranum\src\ImportXls;
 
-...
+//...
 
 public function actionBackup()
 {
