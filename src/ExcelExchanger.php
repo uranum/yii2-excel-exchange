@@ -5,6 +5,7 @@ namespace uranum\src;
 
 use PHPExcel_IOFactory;
 use Yii;
+use yii\base\InvalidValueException;
 use yii\base\Model;
 use yii\base\Widget;
 use yii\bootstrap\ActiveForm;
@@ -15,13 +16,13 @@ use yii\helpers\Url;
 
 class ExcelExchanger extends Widget
 {
-	public $fileNameFrom = 'uploads/export.xlsx';
+	public $mainModelName;
+	public $fileNameFrom = 'uploads' . DIRECTORY_SEPARATOR . 'export.xlsx';
 	public $notNullColumnColor = 'FFDECC';
 	public $columnWidthOfStringType = 35;
 	public $columnWidthOfTextType = 50;
 	public $columnWidthDefault = 15;
 	public $nameOfReserveTable = 'archive_';
-	public $mainModelName;
 	public $backupUrl = 'backup';
 	public $uploadUrl = 'upload';
 	public $importUrl = 'import';
@@ -37,6 +38,9 @@ class ExcelExchanger extends Widget
 	{
 		parent::init();
 
+		if(!$this->mainModelName){
+			throw new InvalidValueException('Model name must be defined!');
+		}
 		/** @var ActiveRecord $mainModelName */
 		$mainModelName = $this->mainModelName;
 		$this->scheme  = $mainModelName::getTableSchema();

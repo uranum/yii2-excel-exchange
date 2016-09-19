@@ -22,7 +22,7 @@ class ImportXls extends Model
 	public function upload()
 	{
 		if ($this->validate()) {
-			$this->file->saveAs('uploads/export.' . $this->file->extension);
+			$this->file->saveAs('uploads' . DIRECTORY_SEPARATOR . 'export.' . $this->file->extension);
 			return true;
 		} else {
 			return false;
