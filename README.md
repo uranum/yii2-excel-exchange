@@ -100,12 +100,21 @@ public function actionUpload()
 ## Widget's properties
 
 string `$mainModelName` - the name of the model for export/import
+
 string `$fileNameFrom` - path to a file for export/import. Default is `'uploads' . DIRECTORY_SEPARATOR . 'export.xlsx'`.
+
 string `$notNullColumnColor` - a value of the color for required columns. Default is `'FFDECC'`
+
 string `$nameOfReserveTable` - prefix for the copied table. Default is `'archive_'`
+
 string `$backupUrl` - url for backup action. Default is `'backup'`
+
 string `$uploadUrl` - url for upload action. Default is `'upload'`
+
 string `$importUrl` - url for import action. Default is `'import'`
+
 integer `$columnWidthOfStringType` - a value of the column's width that has string type. Default is `35`
+
 integer `$columnWidthOfTextType` - a value of the column's width that has text type. Default is `50`
+
 integer `$columnWidthDefault` - a value of the other column's width. Default is `15`
