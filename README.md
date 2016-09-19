@@ -6,17 +6,17 @@
 При импорте данные связанных таблиц не учитываются, они нужны только для ознакомления со связанными полями.
 
 В файле, поля обязательные для заполнения выделены цветом (настраивается).
-![ss](https://yadi.sk/i/jwsC4lbXvPMBM)
+![ss](https://github.com/uranum/yii2-excel-exchange/blob/master/docs/img/xls_file.png)
 
 Есть функция резервного копирования таблицы, в которую импортируются данные.
 
 Выгрузка
 
-![ss](https://yadi.sk/i/h4laiZmbvPHit)
+![ss](https://github.com/uranum/yii2-excel-exchange/blob/master/docs/img/export.png)
 
 Загрузка
 
-![ss](https://yadi.sk/i/727R0e7pvPHwo)
+![ss](https://github.com/uranum/yii2-excel-exchange/blob/master/docs/img/import.png)
 
 
 ## Installation
