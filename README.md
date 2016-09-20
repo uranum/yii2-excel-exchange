@@ -1,5 +1,7 @@
 # Yii 2 Excel Data Exchanger
 
+# Don't install! Under development.
+
 После установки пакета Вы получите функционал выгрузки данных из базы в файл Excel2007 и загрузки измененных в файле данных обратно в базу.
 Пакет работает как виджет, который встраивается в представление. В настройках виджета указывается, данные какой модели нужно выгружать/загружать.
 При выгрузке данных модели подхватываются связанные таблицы (не модели). Для связанных таблиц создаются листы с данными из этих таблиц.
@@ -101,7 +103,7 @@ public function actionUpload()
 
 string `$mainModelName` - the name of the model for export/import. It's mandatory property.
 
-string `$fileNameFrom` - path to a file for export/import. Default is `'uploads' . DIRECTORY_SEPARATOR . 'export.xlsx'`.
+string `$fileNameFrom` - path to a file for export/import. Default is `'uploads/export.xlsx'`. The folder must be exist!
 
 string `$notNullColumnColor` - a value of the color for required columns. Default is `'FFDECC'`
 

@@ -17,7 +17,7 @@ use yii\helpers\Url;
 class ExcelExchanger extends Widget
 {
 	public $mainModelName;
-	public $fileNameFrom = 'uploads' . DIRECTORY_SEPARATOR . 'export.xlsx';
+	public $fileNameFrom;
 	public $notNullColumnColor = 'FFDECC';
 	public $columnWidthOfStringType = 35;
 	public $columnWidthOfTextType = 50;
@@ -45,6 +45,7 @@ class ExcelExchanger extends Widget
 		$mainModelName = $this->mainModelName;
 		$this->scheme  = $mainModelName::getTableSchema();
 		$this->xl      = new \PHPExcel();
+		$this->fileNameFrom = 'uploads' . DIRECTORY_SEPARATOR . 'export.xlsx';
 		Asset::register($this->getView());
 	}
 
