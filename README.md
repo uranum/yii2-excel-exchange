@@ -41,8 +41,8 @@ to the require section of your `composer.json` file.
 
 In view (for example, index.php)
 ```php
-use uranum\src\ExcelExchanger;
-use uranum\src\Asset;
+use uranum\excel\ExcelExchanger;
+use uranum\excel\Asset;
 
 //...
 
@@ -53,8 +53,8 @@ echo ExcelExchanger::widget([
 
 In controller
 ```php
-use uranum\src\ExcelExchanger;
-use uranum\src\ImportXls;
+use uranum\excel\ExcelExchanger;
+use uranum\excel\ImportXls;
 
 //...
 

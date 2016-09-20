@@ -32,12 +32,12 @@
   },
   "autoload": {
     "psr-4": {
-      "uranum\\yii2-excel-exchange\\": "src/"
+      "uranum\\excel\\": "src/"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "uranum\\yii2-excel-exchange\\tests\\": "tests/"
+      "uranum\\excel\\tests\\": "tests/"
     }
   },
   "extra": {

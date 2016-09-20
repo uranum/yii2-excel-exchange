@@ -1,6 +1,6 @@
 <?php
 
-namespace uranum\src;
+namespace uranum\excel;
 
 
 use PHPExcel_IOFactory;
