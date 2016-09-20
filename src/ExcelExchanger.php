@@ -486,14 +486,15 @@ class ExcelExchanger extends Widget
 		/** @var ActiveRecord $mainModelName */
 		$mainModelName = $this->mainModelName;
 		$connection    = Yii::$app->db;
-		$tableName     = $mainModelName::tableName();
+		$tableName     = ltrim($mainModelName::tableName(), '{{%');
+		$tableName     = rtrim($tableName, '}}');
 		$columns       = $this->createColumns($this->scheme);
 		$time          = time();
 		$newTableName  = $this->nameOfReserveTable . $time . '_' . $tableName;
 		$tableOptions  = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB';
 		$connection->createCommand()->createTable($newTableName, $columns, $tableOptions)->execute();
 		$this->createUniqueIndexes($this->scheme, $newTableName);
-		$connection->createCommand('INSERT INTO ' . $newTableName . ' SELECT * FROM ' . $tableName)->query();
+		$connection->createCommand('INSERT INTO ' . $newTableName . ' SELECT * FROM ' . $mainModelName::tableName())->query();
 	}
 
 	/**
