@@ -1,12 +1,12 @@
 # Yii 2 Excel Data Exchanger
 
-After installing this package you will have a functional for the export a data from DB to excel2007 file and upload a data back again.
-The package is a module that you need to register in the config file in the module section. The module has a widget that you can use with
-different AR models in usual (for widgets) way. In the widget's config you need to specify the model name you want to import/export. Other
-optional properties are listed below.
+After installing this package you will be able to export data from DB to an excel2007 file and upload the data back again. 
+The package is a module that you need to register in the config file in the module section. 
+The module has a widget that you can use with different AR models in the usual way (for widgets). 
+In the widget's config you need to specify the model name you want to import/export. Other optional properties are listed below.
 
-If exporting model has related table the file will have got an additional sheet for every table even the one has not a model. The data
-in this additional sheets is a help to handle with related columns. This sheets will be ignored in importing.
+If the exporting model has a related table the file will have an additional sheet for every table even the ones which don’t have a model. 
+The data in these additional sheets helps to handle related columns. This sheets will be ignored in importing.
 
 Required fields are highlighted in the excel file.
 
