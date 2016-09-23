@@ -1,0 +1,27 @@
+<?php
+return [
+	'Загрузить файл'                                                       => 'Upload file',
+	'Шаг {0, number}'                                                      => 'Step {0, number}',
+	'Порядок действий'                                                     => 'Order of actions',
+	'Выгрузка из базы'                                                     => 'Export',
+	'Настройки импорта'                                                    => 'Import settings',
+	'Неправильный запрос.'                                                 => 'Wrong request.',
+	'Файл успешно загружен!'                                               => 'File is uploaded!',
+	'Загрузить данные в базу'                                              => 'Import to DB',
+	'Данные успешно сохранены!'                                            => 'The data is saved successfully!',
+	'Импортирование завершено!'                                            => 'Import is done!',
+	'Исключенные записи удалены'                                           => 'Deleted records are removed',
+	'Импортирование провалилось!'                                          => 'Import failed!',
+	'Существующие записи обновлены'                                        => 'Existing records are updated',
+	'Новые записи добавлены успешно!'                                      => 'New records are inserted successfully!',
+	'Запустить резервное копирование'                                      => 'Start backup',
+	'Сделать импорт данных из файла в БД'                                  => 'Import data from a file into the database',
+	'Новые записи не вставлены, есть ошибки:'                              => 'The new records are not inserted, there are errors:',
+	'Данные в файле несовместимы с таблицей в БД!'                         => 'Incompatible file',
+	'Выбрать файл данных и загрузить его на сервер'                        => 'Select the xls-file and upload it to the server',
+	'Сделать резервную копию данных (можно пропустить)'                    => 'Backup data (optional)',
+	'Копирование завершилось неудачей. Попробуйте позже.'                  => 'Copying failed! Try later.',
+	'Исправьте ошибки, загрузите файл заново и повторите импорт.'          => 'Fix errors, upload the file and import it again.',
+	'Файл имеет некорректный тип или не удалось создать папку назначения.' => 'The file is incorrect or it\'s failed to create destination folder',
+
+];

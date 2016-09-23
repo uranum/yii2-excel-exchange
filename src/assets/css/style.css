@@ -1,0 +1,23 @@
+
+#wait-screen {
+    position: absolute;
+    z-index: 10000;
+    background-color: #FFF;
+    opacity: 1.0;
+}
+
+#wait-screen img {
+    display: none;
+}
+
+.loading{
+    background: url("../img/ajax-loader.gif");
+    width: 128px;
+    height: 15px;
+    position: absolute;
+    left: calc(50% - 64px);
+}
+
+.step-body{
+    margin-bottom: 15px;
+}

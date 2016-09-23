@@ -4,6 +4,7 @@ namespace uranum\excel;
 
 
 use PHPExcel_IOFactory;
+use uranum\excel\models\ImportXls;
 use Yii;
 use yii\base\InvalidValueException;
 use yii\base\Model;
@@ -16,47 +17,95 @@ use yii\helpers\Url;
 
 class ExcelExchanger extends Widget
 {
-	public $mainModelName;
-	public $fileNameFrom;
-	public $notNullColumnColor = 'FFDECC';
+	const COLOR_SUCCESS = 'success';
+	const COLOR_DEFAULT = 'default';
+	const COLOR_WARNING = 'warning';
+	const COLOR_PRIMARY = 'primary';
+	const COLOR_DANGER = 'danger';
+	const COLOR_INFO = 'info';
+	
 	public $columnWidthOfStringType = 35;
 	public $columnWidthOfTextType = 50;
+	public $notNullColumnColor = 'FFDECC';
 	public $columnWidthDefault = 15;
 	public $nameOfReserveTable = 'archive_';
-	public $backupUrl = 'backup';
-	public $uploadUrl = 'upload';
-	public $importUrl = 'import';
-
+	public $backupUrl = 'excel/default/backup';
+	public $uploadUrl = 'excel/default/upload';
+	public $importUrl = 'excel/default/import';
+	public $exportUrl = 'excel/default/export';
+	public $modalId = 'excelImportModal';
+	public $fileInputId = 'uploadFile';
+	public $fullFileNameFrom;
+	public $mainModelName;
+	public $uploadPath;
+	public $fileName;
+	public $exportBtnClass = self::COLOR_SUCCESS;
+	public $importPopupBtnClass = self::COLOR_DANGER;
+	public $panelColorClass = self::COLOR_DEFAULT;
+	public $fileInputColorClass = self::COLOR_WARNING;
+	public $uploadBtnClass = self::COLOR_SUCCESS;
+	public $uploadDataBtnClass = self::COLOR_SUCCESS;
 	/**
 	 * @var \PHPExcel
 	 */
 	private $xl;
 	private $scheme;
 	private $columnsNameArray = [];
-
+	
+	/**
+	 * @inheritdoc
+	 */
 	public function init()
 	{
 		parent::init();
-
-		if(!$this->mainModelName){
+		
+		$module                 = \Yii::$app->getModule('excel');
+		$this->uploadPath       = ($module->params['uploadPath']) ? $module->params['uploadPath'] : 'uploads';
+		$this->fileName         = ($module->params['fileName']) ? $module->params['fileName'] : 'export';
+		$this->fullFileNameFrom = $this->getFullFileNameFrom();
+		if (!$this->mainModelName) {
 			throw new InvalidValueException('Model name must be defined!');
 		}
 		/** @var ActiveRecord $mainModelName */
 		$mainModelName = $this->mainModelName;
 		$this->scheme  = $mainModelName::getTableSchema();
 		$this->xl      = new \PHPExcel();
-		$this->fileNameFrom = 'uploads' . DIRECTORY_SEPARATOR . 'export.xlsx';
 		Asset::register($this->getView());
 	}
-
+	
+	/**
+	 * @inheritdoc
+	 */
 	public function run()
 	{
 		echo "&emsp;";
-		echo Html::a('Export', Url::to(['export']), ['class' => 'btn btn-success']);
+		echo Html::a(Yii::t('excel', 'Выгрузка из базы'), Url::to([$this->exportUrl, 'className' => $this->mainModelName]), ['class' => 'btn btn-' . $this->exportBtnClass]);
 		echo "&emsp;";
 		$this->renderModal();
 	}
-
+	
+	/**
+	 * Return the path to uploaded file
+	 * @return string full file name
+	 */
+	protected function getFullFileNameFrom()
+	{
+		return $this->uploadPath . DIRECTORY_SEPARATOR . $this->fileName . '.' . $this->getFileExtension();
+	}
+	
+	/**
+	 * Find uploaded file and return it's extension
+	 * @return string file extension
+	 */
+	protected function getFileExtension()
+	{
+		$alias = Yii::getAlias('@webroot');
+		$path  = ($alias . DIRECTORY_SEPARATOR . $this->uploadPath . DIRECTORY_SEPARATOR . $this->fileName . '.*');
+		$files = glob($path);
+		
+		return pathinfo($files[0], 4);
+	}
+	
 	/**
 	 * Модальное окно для действий импорта
 	 * Modal for import actions
@@ -65,36 +114,49 @@ class ExcelExchanger extends Widget
 	{
 		$model = new ImportXls();
 		Modal::begin([
-			'header'       => Html::tag('h3', 'Настройки импорта'),
+			'header'       => Html::tag('h3', Yii::t('excel', 'Настройки импорта')),
+			'id'           => $this->modalId,
 			'toggleButton' => [
 				'tab'   => 'a',
-				'label' => 'Загрузить данные в базу',
-				'class' => 'btn btn-danger',
+				'label' => Yii::t('excel', 'Загрузить данные в базу'),
+				'class' => 'btn btn-' . $this->importPopupBtnClass,
 			],
 		]);
-		echo Html::tag('h4', 'Порядок действий');
+		echo Html::tag('h4', Yii::t('excel', 'Порядок действий'));
 		echo Html::beginTag('ol');
-		echo Html::tag('li', 'Сделать резервную копию данных (можно пропустить)');
-		echo Html::tag('li', 'Выбрать файл данных и загрузить его на сервер');
-		echo Html::tag('li', 'Сделать импорт данных из файла в БД');
+		echo Html::tag('li', Yii::t('excel', 'Сделать резервную копию данных (можно пропустить)'));
+		echo Html::tag('li', Yii::t('excel', 'Выбрать файл данных и загрузить его на сервер'));
+		echo Html::tag('li', Yii::t('excel', 'Сделать импорт данных из файла в БД'));
 		echo Html::endTag('ol');
-
-		echo Html::beginTag('div', ['class' => 'panel panel-default']);
-		echo Html::tag('div', 'Шаг 1', ['class' => 'panel-heading text-center']);
-		echo Html::beginTag('p', ['class' => 'panel-body text-center', 'id' => 'step_1']);
-		echo Html::a('Запустить резервное копирование', '#', ['class' => 'btn btn-success', 'id' => 'startCopying', 'data' => ['url' => Url::to([$this->backupUrl])]]);
-		echo Html::endTag('p');
+		
+		echo Html::beginTag('div', ['class' => 'panel panel-' . $this->panelColorClass]);
+		echo Html::tag('div', Yii::t('excel', 'Шаг {0, number}', 1), ['class' => 'panel-heading text-center']);
+		echo Html::beginTag('div', ['class' => 'panel-body text-center', 'id' => 'step_1']);
+		echo Html::beginTag('div', ['class' => 'step-body']);
+		echo Html::a(Yii::t('excel', 'Запустить резервное копирование'), '#', [
+			'class' => 'btn btn-' . self::COLOR_SUCCESS,
+			'id'    => 'startCopying',
+			'data'  => [
+				'url' => Url::to([
+					$this->backupUrl,
+					'className' => $this->mainModelName,
+				]),
+			],
+		]);
 		echo Html::endTag('div');
-
-		echo Html::beginTag('div', ['class' => 'panel panel-default']);
-		echo Html::tag('div', 'Шаг 2', ['class' => 'panel-heading text-center']);
+		echo Html::endTag('div');
+		echo Html::endTag('div');
+		
+		echo Html::beginTag('div', ['class' => 'panel panel-' . $this->panelColorClass]);
+		echo Html::tag('div', Yii::t('excel', 'Шаг {0, number}', 2), ['class' => 'panel-heading text-center']);
 		echo Html::beginTag('div', ['class' => 'panel-body text-center', 'id' => 'step_2']);
+		echo Html::beginTag('div', ['class' => 'step-body']);
 		$form = ActiveForm::begin([
 			'enableClientValidation' => false,
 			'action'                 => Url::to([$this->uploadUrl]),
 			'options'                => [
 				'enctype' => 'multipart/form-data',
-
+			
 			],
 		]);
 		echo $form->field($model, 'file', [
@@ -103,12 +165,12 @@ class ExcelExchanger extends Widget
 				'style' => 'display:inline-block;margin-right:20px;',
 			],
 		])->fileInput([
-			'class' => 'btn btn-warning',
-			'id'    => 'uploadFile',
+			'class' => 'btn btn-' . $this->fileInputColorClass,
+			'id'    => $this->fileInputId,
 		])->label(false);
-		echo Html::submitButton('Загрузить файл', [
+		echo Html::submitButton(Yii::t('excel', 'Загрузить файл'), [
 			'id'    => 'uploadFileForm',
-			'class' => 'btn btn-success',
+			'class' => 'btn btn-' . $this->uploadBtnClass,
 			'data'  => [
 				'url' => Url::to([$this->uploadUrl]),
 			],
@@ -116,20 +178,23 @@ class ExcelExchanger extends Widget
 		ActiveForm::end();
 		echo Html::endTag('div');
 		echo Html::endTag('div');
-
-		echo Html::beginTag('div', ['class' => 'panel panel-default']);
-		echo Html::tag('div', 'Шаг 3', ['class' => 'panel-heading text-center']);
-		echo Html::beginTag('p', ['class' => 'panel-body text-center', 'id' => 'step_3']);
-		echo Html::a('Загрузить данные в базу', '#', ['class' => 'btn btn-success', 'id' => 'startImport', 'data' => ['url' => Url::to([$this->importUrl])]]);
-		echo Html::endTag('p');
 		echo Html::endTag('div');
-
+		
+		echo Html::beginTag('div', ['class' => 'panel panel-' . $this->panelColorClass]);
+		echo Html::tag('div', Yii::t('excel', 'Шаг {0, number}', 3), ['class' => 'panel-heading text-center']);
+		echo Html::beginTag('div', ['class' => 'panel-body text-center', 'id' => 'step_3']);
+		echo Html::beginTag('div', ['class' => 'step-body']);
+		echo Html::a(Yii::t('excel', 'Загрузить данные в базу'), '#',
+			['class' => 'btn btn-' . $this->uploadDataBtnClass, 'id' => 'startImport', 'data' => ['url' => Url::to([$this->importUrl, 'className' => $this->mainModelName])]]);
+		echo Html::endTag('div');
+		echo Html::endTag('div');
+		echo Html::endTag('div');
+		
 		Modal::end();
 	}
-
+	
 	/**
 	 * Export
-	 * Exporting data from DB to .xlsx and ordering to save it locally
 	 * Выгружает данные из базы в .xlsx файл и предлагает сохранить его локально
 	 * @throws \PHPExcel_Exception
 	 * @throws \PHPExcel_Writer_Exception
@@ -145,52 +210,7 @@ class ExcelExchanger extends Widget
 		}
 		$this->saveExportedFile();
 	}
-
-	/**
-	 * Export
-	 * Creates a sheet for each related table and populates it with a data directly from DB (without AR)
-	 * Создает листы для каждой связанной таблицы и заполняет данными напрямую из базы (не через Модель)
-	 * @param $fk array of Foreign Key names of the related tables
-	 */
-	private function createRelatedSheets($fk)
-	{
-		foreach ($fk as $tableName) {
-			$newSheet = new \PHPExcel_Worksheet($this->xl, $tableName);
-			$this->xl->addSheet($newSheet);
-			$this->xl->setActiveSheetIndexByName($tableName);
-			$data = Yii::$app->db->createCommand("SELECT * FROM {$tableName} ORDER BY id")->queryAll();
-			foreach ($data as $rowNumber => $rowData) {
-				$i = 0;
-				foreach ($rowData as $cell) {
-					$this->xl->getActiveSheet()->setCellValueByColumnAndRow($i, $rowNumber+1, $cell);
-					$i++;
-				}
-			}
-		}
-		$this->xl->setActiveSheetIndex(0);
-	}
-
-	/**
-	 * Export
-	 * Returns an array of the names of the related tables or false if ones absent
-	 * Возвращает массив с названиями таблиц, на которые ссылается основная модель
-	 * или false, если у модели нет внешних ключей
-	 * @return array|bool
-	 */
-	private function findForeignKeys()
-	{
-		$fk = $this->scheme->foreignKeys;
-		if (!empty($fk)) {
-			foreach ($fk as $key) {
-				$fkTableNames[] = $key[0];
-			}
-
-			return $fkTableNames;
-		} else {
-			return false;
-		}
-	}
-
+	
 	/**
 	 * Export
 	 * Prepare active sheet - general design
@@ -227,7 +247,7 @@ class ExcelExchanger extends Widget
 			]);
 		$this->prepareActiveSheetColumnStyles($columnsNames);
 	}
-
+	
 	/**
 	 * Export
 	 * Returns the names of columns of .xls table
@@ -244,7 +264,7 @@ class ExcelExchanger extends Widget
 			'AW', 'AX', 'AY', 'AZ',
 		];
 	}
-
+	
 	/**
 	 * Export
 	 * Decorating of the columns
@@ -273,14 +293,27 @@ class ExcelExchanger extends Widget
 			$this->xl->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth($width);
 			$this->xl->getActiveSheet()->setCellValueByColumnAndRow($i, 1, $cellName);
 			$i++;
-
+			
 			if (!$col->allowNull && $col->name != 'id' && $col->name != 'created_at' && $col->name != 'updated_at') {
 				$this->xl->getActiveSheet()->getStyle($columnsNames[$i - 1] . '1')->getFill()->setFillType(\PHPExcel_Style_Fill::FILL_SOLID)
 					->getStartColor()->setARGB($this->notNullColumnColor);
 			}
 		}
 	}
-
+	
+	/**
+	 * Finds all models of the main table
+	 * @return array|\yii\db\ActiveRecord[]
+	 */
+	private function getAllModelsOfMainTable()
+	{
+		/** @var ActiveRecord $mainModelName */
+		$mainModelName = $this->mainModelName;
+		$mainModels    = $mainModelName::find()->all();
+		
+		return $mainModels;
+	}
+	
 	/**
 	 * Export
 	 * Populates the active sheet
@@ -300,31 +333,63 @@ class ExcelExchanger extends Widget
 		}
 		$this->columnsNameArray = [];
 	}
-
+	
+	/**
+	 * Export
+	 * Returns an array of the names of the related tables or false if ones absent
+	 * Возвращает массив с названиями таблиц, на которые ссылается основная модель
+	 * или false, если у модели нет внешних ключей
+	 * @return array|bool
+	 */
+	private function findForeignKeys()
+	{
+		$fk = $this->scheme->foreignKeys;
+		if (!empty($fk)) {
+			foreach ($fk as $key) {
+				$fkTableNames[] = $key[0];
+			}
+			
+			return $fkTableNames;
+		} else {
+			return false;
+		}
+	}
+	
+	/**
+	 * Export
+	 * Creates a sheet for each related table and populates it with a data directly from DB (without AR)
+	 * Создает листы для каждой связанной таблицы и заполняет данными напрямую из базы (не через Модель)
+	 * @param $fk array of Foreign Key names of the related tables
+	 */
+	private function createRelatedSheets($fk)
+	{
+		foreach ($fk as $tableName) {
+			$newSheet = new \PHPExcel_Worksheet($this->xl, $tableName);
+			$this->xl->addSheet($newSheet);
+			$this->xl->setActiveSheetIndexByName($tableName);
+			$data = Yii::$app->db->createCommand("SELECT * FROM {$tableName} ORDER BY id")->queryAll();
+			foreach ($data as $rowNumber => $rowData) {
+				$i = 0;
+				foreach ($rowData as $cell) {
+					$this->xl->getActiveSheet()->setCellValueByColumnAndRow($i, $rowNumber + 1, $cell);
+					$i++;
+				}
+			}
+		}
+		$this->xl->setActiveSheetIndex(0);
+	}
+	
 	/**
 	 * Saves exported file and send it in browser
 	 */
 	private function saveExportedFile()
 	{
 		$writer = new \PHPExcel_Writer_Excel2007($this->xl);
-		$writer->save($this->fileNameFrom);
+		$writer->save($this->fullFileNameFrom);
 		$response = Yii::$app->response;
-		$response->sendFile($this->fileNameFrom)->send();
+		$response->sendFile($this->fullFileNameFrom)->send();
 	}
-
-	/**
-	 * Finds all models of the main table
-	 * @return array|\yii\db\ActiveRecord[]
-	 */
-	private function getAllModelsOfMainTable()
-	{
-		/** @var ActiveRecord $mainModelName */
-		$mainModelName = $this->mainModelName;
-		$mainModels    = $mainModelName::find()->all();
-
-		return $mainModels;
-	}
-
+	
 	/**
 	 * Import from file to DB
 	 * Загружает данные из файла на сервере в базу
@@ -342,13 +407,13 @@ class ExcelExchanger extends Widget
 		/** если заголовки в файле соответствуют полям модели, то импортировать данные файла */
 		if (isset($headers) && empty(array_diff_key(array_flip($columnsNameArray), $headers))) {
 			unset($models[$mainModelName::className()]['id']);
-
+			
 			return ($this->populateDB($mainModelName, $models));
 		} else {
-			return "Данные в файле несовместимы с таблицей в БД!";
+			return Yii::t('excel', "Данные в файле несовместимы с таблицей в БД!");
 		}
 	}
-
+	
 	/**
 	 * Data preparing: sampling from the file and convert data into an array of model attributes
 	 * Подготовка данных: выборка из файла и преобразование в массив атрибутов модели
@@ -362,7 +427,7 @@ class ExcelExchanger extends Widget
 		/** @var \PHPExcel_Reader_Excel2007 $rider */
 		$rider = PHPExcel_IOFactory::createReader('Excel2007');
 		$rider->setReadDataOnly(true);
-		$xl     = $rider->load($this->fileNameFrom);
+		$xl = $rider->load($this->fullFileNameFrom);
 		$xl->setActiveSheetIndex(0);
 		$sheet  = $xl->getActiveSheet();
 		$models = [];
@@ -380,10 +445,10 @@ class ExcelExchanger extends Widget
 			}
 			$models[$modelName::className()][$mainModelId] = $model;
 		}
-
+		
 		return $models;
 	}
-
+	
 	/**
 	 * Populates DB
 	 * Заполнение БД записями из файла
@@ -396,15 +461,16 @@ class ExcelExchanger extends Widget
 		$modelsMain = $modelName::find()->indexBy('id')->all();
 		if (Model::loadMultiple($modelsMain, $models, $modelName) && Model::validateMultiple($modelsMain)) {
 			$this->saveChangedRecords($modelsMain);
-			$deleteResult = $this->deleteAbsentRecordsFromDB($models, $modelsMain, $modelName);
-			$insertResult = $this->insertNewRecordsToDB($modelName, $models, $modelsMain);
-
-			return 'Существующие записи обновлены...<br>' . $deleteResult . $insertResult;
+			$deleteResult  = $this->deleteAbsentRecordsFromDB($models, $modelsMain, $modelName);
+			$insertResult  = $this->insertNewRecordsToDB($modelName, $models, $modelsMain);
+			$resultMessage = (!$insertResult && !$deleteResult) ? Yii::t('excel', 'Импортирование завершено!') : '';
+			
+			return Yii::t('excel', 'Существующие записи обновлены') . '...<br>' . $deleteResult . $insertResult . $resultMessage;
 		} else {
-			return 'Импортирование провалилось!';
+			return Yii::t('excel', 'Импортирование провалилось!');
 		}
 	}
-
+	
 	/**
 	 * Saves records (without new ones)
 	 * Сохранят записи: измененные, неизмененные, удаленные (удаленные записи будут удалены следующим запросом)
@@ -417,7 +483,7 @@ class ExcelExchanger extends Widget
 			$model->save(false);
 		}
 	}
-
+	
 	/**
 	 * Deletes records from DB that were deleted from file
 	 * Удаляет из БД записи, которые были удалены в файле
@@ -435,13 +501,13 @@ class ExcelExchanger extends Widget
 			foreach ($itemsToDelete as $item) {
 				$item->delete();
 			}
-
-			return 'Исключенные записи удалены...<br>';
+			
+			return Yii::t('excel', 'Исключенные записи удалены') . '...<br>';
 		} else {
 			return '';
 		}
 	}
-
+	
 	/**
 	 * Inserts new records to DB that were added to file
 	 * Вставляет в БД новые записи из файла, которых не было до импорта
@@ -453,7 +519,7 @@ class ExcelExchanger extends Widget
 	private function insertNewRecordsToDB($modelName, $models, $modelsMain)
 	{
 		$itemsToInsert = array_diff_key($models[$modelName], $modelsMain);
-		$importFalse = true;
+		$importFalse   = true;
 		if (!empty($itemsToInsert)) {
 			foreach ($itemsToInsert as $newItem) {
 				/** @var ActiveRecord $newModel */
@@ -463,16 +529,17 @@ class ExcelExchanger extends Widget
 					$newModel->save(false);
 				} else {
 					$importFalse = false;
-					return "Новые записи не вставлены, есть ошибки:<br>" . "<code>" . implode(', ', $newModel->getFirstErrors()) . "</code>" .
-					"<br>Исправьте ошибки, загрузите файл заново и повторите импорт.";
+					
+					return Yii::t('excel', "Новые записи не вставлены, есть ошибки:") . "<br>" . "<code>" . implode(', ', $newModel->getFirstErrors()) . "</code>" .
+					"<br>" . Yii::t('excel', "Исправьте ошибки, загрузите файл заново и повторите импорт.");
 				}
 			}
 			if ($importFalse) {
-				return "Новые записи добавлены успешно!<br>";
+				return Yii::t('excel', "Новые записи добавлены успешно!") . "<br>";
 			}
 		}
 	}
-
+	
 	/**
 	 * Backup updated table
 	 * Методы для резервного копирования таблиц
@@ -496,7 +563,7 @@ class ExcelExchanger extends Widget
 		$this->createUniqueIndexes($this->scheme, $newTableName);
 		$connection->createCommand('INSERT INTO ' . $newTableName . ' SELECT * FROM ' . $mainModelName::tableName())->query();
 	}
-
+	
 	/**
 	 * Creates an array of columns copied table
 	 * Создает массив колонок таблицы для создания резервной копии таблицы
@@ -521,11 +588,10 @@ class ExcelExchanger extends Widget
 			}
 			$columns[$col->name] = $col->dbType . $unsigned . $notNull . $default . $ai . $pk . $comment;
 		}
-
+		
 		return $columns;
 	}
-
-
+	
 	/**
 	 * Creates unique indexes for a name of the copied table
 	 * Создает для таблицы уникальные индексы при резервном копировании
