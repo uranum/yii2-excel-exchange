@@ -1,7 +1,5 @@
 # Yii 2 Excel Data Exchanger
 
-## Don't install! Under development.
-
 After installing this package you will be able to export data from DB to an excel2007 file and upload the data back again. 
 The package is a module that you need to register in the config file in the module section. 
 The module has a widget that you can use with different AR models in the usual way (for widgets). 
@@ -66,7 +64,6 @@ How to use
 ###In view (for example, index.php)
 ```php
 use uranum\excel\ExcelExchanger;
-use uranum\excel\Asset;
 
 //...
 
