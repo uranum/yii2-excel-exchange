@@ -87,10 +87,28 @@ class ExcelExchanger extends Widget
 	/**
 	 * Return the path to uploaded file
 	 * @return string full file name
+	 * @throws InvalidValueException
 	 */
 	protected function getFullFileNameFrom()
 	{
-		return $this->uploadPath . DIRECTORY_SEPARATOR . $this->fileName . '.' . $this->getFileExtension();
+		if (self::checkFileExist($this->uploadPath)) {
+			$extension = (empty($this->getFileExtension())) ? 'xlsx' : $this->getFileExtension();
+			
+			return $this->uploadPath . DIRECTORY_SEPARATOR . $this->fileName . '.' . $extension;
+		} else {
+			throw new InvalidValueException('Can not create a destination directory.');
+		}
+	}
+	
+	public static function checkFileExist($file)
+	{
+		if (!file_exists($file)) {
+			if (!mkdir($file, 0777, true)) {
+				return false;
+			}
+		}
+		
+		return true;
 	}
 	
 	/**
@@ -309,9 +327,8 @@ class ExcelExchanger extends Widget
 	{
 		/** @var ActiveRecord $mainModelName */
 		$mainModelName = $this->mainModelName;
-		$mainModels    = $mainModelName::find()->all();
 		
-		return $mainModels;
+		return $mainModelName::find()->all();
 	}
 	
 	/**
