@@ -1,5 +1,7 @@
 # Yii 2 Excel Data Exchanger
 
+## Don't install! Under development.
+
 After installing this package you will be able to export data from DB to an excel2007 file and upload the data back again. 
 The package is a module that you need to register in the config file in the module section. 
 The module has a widget that you can use with different AR models in the usual way (for widgets). 
@@ -47,11 +49,13 @@ to the require section of your `composer.json` file.
 //      ...
 		'excel' => [
 			'class'  => 'uranum\excel\Module',
+			/* Optional. Here is default:
 			'params' => [
 				'uploadPath' => 'uploads', //module's properties
 				'fileName'   => 'export',
 				'extensions' => 'xls, xlsx',
 			],
+			*/
 		],
 	],
 ```

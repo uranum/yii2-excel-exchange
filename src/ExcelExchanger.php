@@ -29,10 +29,10 @@ class ExcelExchanger extends Widget
 	public $notNullColumnColor = 'FFDECC';
 	public $columnWidthDefault = 15;
 	public $nameOfReserveTable = 'archive_';
-	public $backupUrl = 'excel/default/backup';
-	public $uploadUrl = 'excel/default/upload';
-	public $importUrl = 'excel/default/import';
-	public $exportUrl = 'excel/default/export';
+	public $backupUrl = '/excel/default/backup';
+	public $uploadUrl = '/excel/default/upload';
+	public $importUrl = '/excel/default/import';
+	public $exportUrl = '/excel/default/export';
 	public $modalId = 'excelImportModal';
 	public $fileInputId = 'uploadFile';
 	public $fullFileNameFrom;
