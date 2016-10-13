@@ -60,8 +60,8 @@ class ExcelExchanger extends Widget
 		parent::init();
 		
 		$module                 = \Yii::$app->getModule('excel');
-		$this->uploadPath       = ($module->params['uploadPath']) ? $module->params['uploadPath'] : 'uploads';
-		$this->fileName         = ($module->params['fileName']) ? $module->params['fileName'] : 'export';
+		$this->uploadPath       = $module->params['uploadPath'];
+		$this->fileName         = $module->params['fileName'];
 		$this->fullFileNameFrom = $this->getFullFileNameFrom();
 		if (!$this->mainModelName) {
 			throw new InvalidValueException('Model name must be defined!');
@@ -121,7 +121,7 @@ class ExcelExchanger extends Widget
 		$path  = ($alias . DIRECTORY_SEPARATOR . $this->uploadPath . DIRECTORY_SEPARATOR . $this->fileName . '.*');
 		$files = glob($path);
 		
-		return pathinfo($files[0], 4);
+		return (is_array($files) && !empty($files)) ? pathinfo($files[0], 4) : false;
 	}
 	
 	/**

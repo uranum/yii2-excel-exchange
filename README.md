@@ -10,6 +10,8 @@ The data in these additional sheets helps to handle related columns. This sheets
 
 Required fields are highlighted in the excel file.
 
+**Note! One file is used for all models! The new exporting will overwrite existing file.**
+
 ![Required fields](https://github.com/uranum/yii2-excel-exchange/blob/master/docs/img/xls_file.png)
 
 There is a feature to backup the table before importing.
@@ -47,13 +49,11 @@ to the require section of your `composer.json` file.
 //      ...
 		'excel' => [
 			'class'  => 'uranum\excel\Module',
-			/* Optional. Here is default:
 			'params' => [
-				'uploadPath' => 'uploads', //module's properties
+				'uploadPath' => 'uploads', // the path relative to the root
 				'fileName'   => 'export',
 				'extensions' => 'xls, xlsx',
 			],
-			*/
 		],
 	],
 ```

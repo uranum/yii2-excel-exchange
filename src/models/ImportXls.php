@@ -21,9 +21,9 @@ class ImportXls extends Model
 		parent::init();
 		
 		$module           = \Yii::$app->getModule('excel');
-		$this->extensions = ($module->params['extensions']) ? $module->params['extensions'] : 'xls, xlsx';
-		$this->path       = ($module->params['uploadPath']) ? $module->params['uploadPath'] . DIRECTORY_SEPARATOR : 'uploads' . DIRECTORY_SEPARATOR;
-		$this->fileName   = ($module->params['fileName']) ? $module->params['fileName'] : 'export';
+		$this->extensions = $module->params['extensions'];
+		$this->path       = $module->params['uploadPath'] . DIRECTORY_SEPARATOR;
+		$this->fileName   = $module->params['fileName'];
 	}
 	
 	public function rules()
