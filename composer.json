@@ -10,7 +10,7 @@
     "export excel",
     "import excel"
   ],
-  "license": "BSD-3-Clause",
+  "license": "MIT",
   "authors": [
     {
       "name": "Eugeny Emelyanov",
@@ -32,18 +32,12 @@
   },
   "autoload": {
     "psr-4": {
-      "uranum\\excel\\": "src/"
+      "uranum\\excel\\": "src"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "uranum\\excel\\tests\\": "tests/"
-    }
-  },
-  "extra": {
-    "asset-installer-paths": {
-      "npm-asset-library": "vendor/npm",
-      "bower-asset-library": "vendor/bower"
+      "uranum\\excel\\tests\\": "tests"
     }
   }
 }

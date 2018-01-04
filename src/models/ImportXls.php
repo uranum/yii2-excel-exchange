@@ -8,12 +8,12 @@ use yii\web\UploadedFile;
 
 class ImportXls extends Model
 {
-	public $extensions;
-	/**
+    /**
 	 * @var UploadedFile
 	 */
 	public $file;
-	public $fileName;
+    public $extensions;
+    public $fileName;
 	public $path;
 	
 	public function init()
@@ -29,7 +29,7 @@ class ImportXls extends Model
 	public function rules()
 	{
 		return [
-			[['file'], 'file', 'extensions' => $this->extensions, 'skipOnEmpty' => false,],
+			[['file'], 'file', 'extensions' => $this->extensions, 'checkExtensionByMimeType' => false, 'skipOnEmpty' => false],
 		];
 	}
 	
