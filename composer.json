@@ -1,7 +1,7 @@
 {
   "name": "uranum/yii2-excel-exchange",
   "description": "Yii2 extension for exchanging a data from DB to excel and back again for Yii2 Framework.",
-  "type": "yii2-extension",
+  "type": "library",
   "keywords": [
     "yii2",
     "yii 2",
