@@ -23,7 +23,7 @@
     "source": "https://github.com/uranum/yii2-excel-exchange"
   },
   "require": {
-    "php": "~7.0.0",
+    "php": "^7.0.0",
     "yiisoft/yii2": "~2.0",
     "yiisoft/yii2-bootstrap": "*",
     "phpoffice/phpexcel": "*"
