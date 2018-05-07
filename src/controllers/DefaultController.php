@@ -18,9 +18,9 @@ class DefaultController extends Controller
 		if (Yii::$app->request->isAjax && Yii::$app->request->isPost) {
 			$data = new ExcelExchanger(['mainModelName' => $className]);
 			$data->copyTable();
-			echo Yii::t('excel', 'Данные успешно сохранены!');
+            return Yii::t('excel', 'Данные успешно сохранены!');
 		} else {
-			echo Yii::t('excel', 'Копирование завершилось неудачей. Попробуйте позже.');
+            return Yii::t('excel', 'Копирование завершилось неудачей. Попробуйте позже.');
 		}
 	}
 	
@@ -34,9 +34,9 @@ class DefaultController extends Controller
 	{
 		if (Yii::$app->request->isPost && Yii::$app->request->isAjax) {
 			$data = new ExcelExchanger(['mainModelName' => $className]);
-			echo $data->import();
+			return $data->import();
 		} else {
-			echo Yii::t('excel', 'Неправильный запрос.');
+			return Yii::t('excel', 'Неправильный запрос.');
 		}
 	}
 	
@@ -50,9 +50,9 @@ class DefaultController extends Controller
 			$model = new ImportXls();
 			$model->file = UploadedFile::getInstance($model, 'file');
 			if ($model->upload()) {
-				echo Yii::t('excel', 'Файл успешно загружен!');
+				return Yii::t('excel', 'Файл успешно загружен!');
 			} else {
-				echo Yii::t('excel', 'Файл имеет некорректный тип или не удалось создать папку назначения.');
+				return Yii::t('excel', 'Файл имеет некорректный тип или не удалось создать папку назначения.');
 			}
 		}
 	}
