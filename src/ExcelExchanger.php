@@ -79,7 +79,7 @@ class ExcelExchanger extends Widget
 	public function run()
 	{
 		echo "&emsp;";
-		echo Html::a(Yii::t('excel', 'Выгрузка из базы'), Url::to([$this->exportUrl, 'className' => $this->mainModelName]), ['class' => 'btn btn-' . $this->exportBtnClass]);
+		echo Html::a(Yii::t('excel', 'Выгрузка из базы'), Url::to([$this->exportUrl, 'className' => $this->mainModelName->className()]), ['class' => 'btn btn-' . $this->exportBtnClass]);
 		echo "&emsp;";
 		$this->renderModal();
 	}

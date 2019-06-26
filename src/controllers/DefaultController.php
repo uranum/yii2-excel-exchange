@@ -26,7 +26,8 @@ class DefaultController extends Controller
 	
 	public function actionExport($className)
 	{
-		$data = new ExcelExchanger(['mainModelName' => $className]);
+        $model = new $className;
+        $data = new ExcelExchanger(['mainModelName' => $model]);
 		$data->export();
 	}
 	
